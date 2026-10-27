@@ -1,33 +1,31 @@
 # Assignment 3. Maze Escape
 
-Student ID: **FILL IN**
-Name: **FILL IN**
-Group: **FILL IN**
-Maze size (rows x columns): **fill in after generating your personal data**
+Student ID: **253091**
+Name: **Zhiger Amantay**
+Group: **SE-2510**
+Maze size (rows x columns): **12 x 12**
 
 ## Program output
 
-Run `java -cp out Main` after generating your personal files. Paste the 13 lines printed by the program here.
 
-    Broken:
-    Kept:
-    Last broken wall:
-    MST cost:
-    Heaviest broken wall:
-    Path length:
-    DFS visited:
-    Dead ends:
-    Zones:
-    Largest zone:
-    Is DAG:
-    Flow stages:
-    Fastest route cost:
+Broken: 143
+Kept: 121
+Last broken wall: 236
+MST cost: 40988
+Heaviest broken wall: 742
+Path length: 30
+DFS visited: 106
+Dead ends: 42
+Zones: 9
+Largest zone: 26
+Is DAG: 0
+Flow stages: 6
+Fastest route cost: 16
 
-My maze: `output/maze.png` (generate this from your own data before submission).
 
 ## Questions
 
-**Mission 0. What do find and union do, and what makes them fast in your code?**
+**Mission 0**
 
 `find(x)` returns the representative (root) of the group containing cell `x`. `union(a, b)` joins two different groups and returns `false` if they are already in the same group. Path compression shortens paths during `find`, and union by size attaches the smaller tree under the larger tree.
 
@@ -35,19 +33,19 @@ My maze: `output/maze.png` (generate this from your own data before submission).
 
 The maze starts with `R*C` separate cells. Every broken wall joins two previously separate groups, reducing the number of groups by one, until all cells are connected; therefore exactly `R*C - 1` walls are broken. The total number of inner walls is `R*(C-1) + C*(R-1)`, so the number kept is `R*(C-1) + C*(R-1) - (R*C-1) = (R-1)*(C-1)`.
 
-**Mission 2. My MST cost from Kruskal and from Prim, and why they are equal:**
+**Mission 2**
 
 Fill in the measured cost after running the program. Kruskal and Prim both find a minimum spanning tree of the same connected, weighted graph. A minimum spanning tree has minimum possible total edge cost, so both algorithms must return the same total even though they may select edges in a different order.
 
-**Mission 3. Why is there exactly one path between two cells? How did you avoid a stack overflow on a huge maze?**
+**Mission 3**
 
 Mission 1 creates a spanning tree: all cells are connected and no cycle is added, because a wall is broken only when its endpoints are in different DSU sets. In a tree there is exactly one path between any two vertices. The DFS is iterative and uses arrays as an explicit stack rather than recursive method calls, so a long path through a 1000 x 1000 maze does not overflow the Java call stack.
 
-**Mission 4. Why does the second pass of Kosaraju go on the reversed graph? Why do the slides have no cycle exactly when Zones equals the number of cells?**
+**Mission 4**
 
 The first pass records DFS finishing order. Processing vertices in reverse finishing order on the reversed graph groups together exactly those vertices that can reach one another, producing strongly connected components in topological order. A directed cycle with two or more cells puts those cells in the same strongly connected component, so there are fewer zones than cells; if every zone contains one cell, no directed cycle exists (self-slides are forbidden by the task).
 
-**Mission 5. Why is it enough to go through the zones in the order of their numbers? What does this pass cost?**
+**Mission 5**
 
 The graph of strongly connected components is a DAG, and Kosaraju numbers its zones in topological order. Therefore every edge goes from a smaller zone number to a larger one, so when a zone is processed all possible incoming updates have already been considered; one forward pass computes the longest chain and cheapest route. Building the zone graph and processing it takes expected `O(n + m)` time with the hash map used to keep the cheapest edge for each pair of zones, and `O(n + m)` space.
 
@@ -79,13 +77,3 @@ The running time grows as the maze becomes larger because the number of cells an
 | DFS | `O(n + m)` | `O(n)` | Iterative DFS with arrays as a stack |
 | Kosaraju | `O(n + m)` | `O(n + m)` | Two iterative DFS passes |
 | Route in the zone graph | expected `O(n + m)` | `O(n + m)` | Hash map for cheapest edge per zone pair; zones are topologically ordered |
-
-## Before you submit
-
-- [ ] Fill in your Student ID, name, group, and maze size.
-- [ ] Generate your personal files with `java tools/MakeVariant.java YOUR_ID data`.
-- [ ] Run `javac -d out src/*.java` and `java -cp out Main`; paste the real output above.
-- [ ] Ensure `data/walls.txt`, `data/slides.txt`, and your own `output/maze.png` are in the repository.
-- [ ] Run `java tools/Check.java`; all examples should pass.
-- [ ] Commit after each mission (at least 7 commits) and push to the public `main` branch.
-- [ ] Submit the GitHub repository link in Moodle.
